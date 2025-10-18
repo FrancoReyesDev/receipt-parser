@@ -10,7 +10,6 @@ El JSON resultante debe ser válido para JSON.parse en JavaScript.
 
 El usuario te proporcionará:
 
-
 Las columnas esperadas como un array de strings: "[columna_a, columna_b, etc]",
 Las instrucciones para el formato como un string,
 Las instrucciones adicionales específicas del archivo como un string,
@@ -57,3 +56,10 @@ Sobre contexto:
 Si hay ambigüedad entre valores con coma o punto, usa la notación más consistente dentro del mismo archivo.
 
 Devuelve solo el JSON final, sin comentarios, sin texto adicional, y estructurado correctamente como (string | number)[][].`;
+
+export const createUserPrompt = (
+  formatColumns: string,
+  formatInstructions: string,
+  filesInstructions: string,
+) =>
+  `columnas del formato: ${formatColumns}, instrucciones adicionales para el formato: ${formatInstructions ?? "sin instrucciones adicionales"}, instrucciones para el archivo: ${filesInstructions}`;

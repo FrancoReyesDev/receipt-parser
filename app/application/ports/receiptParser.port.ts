@@ -6,6 +6,6 @@ export class ReceiptParserPort extends Context.Tag("ReceiptParser")<
     parseReceipt: (
       format: { columnsArrayString: string; instructions: string },
       input: { file: File; instructions: string },
-    ) => Effect.Effect<string>;
+    ) => Effect.Effect<unknown>;
   }
 >() {}

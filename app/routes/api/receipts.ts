@@ -6,7 +6,7 @@ import { parseReceiptUC } from "~/application/useCases/parseReceipt.useCase";
 import {
   OpenAIClient,
   receiptParserGPTAdapter,
-} from "~/adapters/receiptParserGPT.adapter";
+} from "~/infra/adapters/receiptParserGPT.adapter";
 
 export async function action({ context, request }: Route.ActionArgs) {
   const formData = await request.formData();

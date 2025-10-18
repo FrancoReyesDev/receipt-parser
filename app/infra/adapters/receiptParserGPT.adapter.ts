@@ -3,29 +3,6 @@ import OpenAI from "openai";
 import { ReceiptParserPort } from "~/application/ports/receiptParser.port";
 import { systemPrompt } from "~/constants/Prompts";
 
-export const fileToInputItem = async (file: File) => {
-  const arrayBuffer = await file.arrayBuffer();
-  const uint8Array = new Uint8Array(arrayBuffer);
-
-  // convertir a base64 en entorno web
-  let binary = "";
-  for (let i = 0; i < uint8Array.length; i++) {
-    binary += String.fromCharCode(uint8Array[i]);
-  }
-  const base64 = btoa(binary);
-
-  const mimeType = file.type || "application/octet-stream";
-  const dataUrl = `data:${mimeType};base64,${base64}`;
-
-  if (mimeType.startsWith("image/"))
-    return { type: "input_image", image_url: dataUrl } as const;
-
-  if (mimeType === "application/pdf")
-    return { type: "input_file", file_url: dataUrl } as const;
-
-  throw new Error(`Tipo de archivo no soportado: ${mimeType}`);
-};
-
 export class OpenAIClient extends Context.Tag("OpenAIClient")<
   OpenAIClient,
   OpenAI
@@ -47,7 +24,6 @@ export const receiptParserGPTAdapter = Layer.effect(
         const response = yield* Effect.promise(() =>
           client.responses.create({
             model: "gpt-5",
-            // reasoning: { effort: "low" },
             input: [
               {
                 role: "system",

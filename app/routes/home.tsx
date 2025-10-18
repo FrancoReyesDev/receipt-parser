@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { getColumnsFromXlsxFileUC } from "~/application/useCases/getColumnsFromXlsxFile.useCase";
 import { WorkbookServicePort } from "~/application/ports/workbookService.port";
-import { WorkbookXlsxAdapter } from "~/adapters/workbookXlsx.adapter";
+import { WorkbookXlsxAdapter } from "~/infra/adapters/workbookXlsx.adapter";
 import { FormFields } from "~/constants/FormFields";
 
 const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
