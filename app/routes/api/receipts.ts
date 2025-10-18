@@ -11,18 +11,18 @@ import {
 export async function action({ context, request }: Route.ActionArgs) {
   const formData = await request.formData();
 
-  const formatColumnsArrayString =
-    (formData.get(FormFields.formatColumnsArrayString) as string) ?? "[]";
-  const formatInstructions =
-    (formData.get(FormFields.formatInstructions) as string) ?? "";
-
-  const inputFiles = formData.getAll(FormFields.inputFiles);
-  const inputInstructions =
-    (formData.get(FormFields.inputInstructions) as string) ?? "";
+  const formatColumnsArrayString = formData.get(
+    FormFields.formatColumnsArrayString
+  ) as string;
+  const formatInstructions = formData.get(
+    FormFields.formatInstructions
+  ) as string;
+  const inputFiles = formData.getAll(FormFields.inputFiles) as File[];
+  const inputInstructions = formData.get(
+    FormFields.inputInstructions
+  ) as string;
 
   const client = new OpenAI({ apiKey: context.cloudflare.env.OPENAI_API_KEY });
-
-  const openAiclientLive = Layer.succeed(OpenAIClient, client);
 
   const responses = await Promise.all(
     inputFiles.map((file) =>
@@ -33,14 +33,14 @@ export async function action({ context, request }: Route.ActionArgs) {
             formatColumnsArrayString,
             formatInstructions,
             file,
-            inputInstructions,
-          ),
+            inputInstructions
+          )
         ),
         Effect.provide(receiptParserGPTAdapter),
-        Effect.provide(openAiclientLive),
-        Effect.runPromise,
-      ),
-    ),
+        Effect.provide(Layer.succeed(OpenAIClient, client)),
+        Effect.runPromise
+      )
+    )
   );
 
   return new Response(String(responses), {

@@ -1,16 +1,9 @@
 import { Effect } from "effect";
 import { ReceiptParserPort } from "../ports/receiptParser.port";
+import type { ParseReceiptConfig } from "~/domain/ParseReceiptConfig.domain";
 
-export const parseReceiptUC = (
-  columnsArrayString: string,
-  columnsInstructions: string,
-  receiptFile: File,
-  receiptInstructions: string,
-) =>
+export const parseReceiptUC = (config: ParseReceiptConfig) =>
   Effect.gen(function* () {
     const receiptParser = yield* ReceiptParserPort;
-    return yield* receiptParser.parseReceipt(
-      { columnsArrayString, instructions: columnsInstructions },
-      { file: receiptFile, instructions: receiptInstructions },
-    );
+    return yield* receiptParser.parseReceipt(config);
   });

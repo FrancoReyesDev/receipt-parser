@@ -1,3 +1,5 @@
+import type { ParseReceiptConfig } from "~/domain/ParseReceiptConfig.domain";
+
 export const systemPrompt = `Eres un sistema que convierte facturas en datos estructurados para hojas de cálculo.
 
 Tu tarea es transformar el texto de una factura en un JSON 2D array (array de arrays), donde:
@@ -57,9 +59,12 @@ Si hay ambigüedad entre valores con coma o punto, usa la notación más consist
 
 Devuelve solo el JSON final, sin comentarios, sin texto adicional, y estructurado correctamente como (string | number)[][].`;
 
-export const createUserPrompt = (
-  formatColumns: string,
-  formatInstructions: string,
-  filesInstructions: string,
-) =>
-  `columnas del formato: ${formatColumns}, instrucciones adicionales para el formato: ${formatInstructions ?? "sin instrucciones adicionales"}, instrucciones para el archivo: ${filesInstructions}`;
+export const createUserPrompt = ({
+  formatColumns,
+  formatInstructions,
+  inputInstructions,
+}: Pick<
+  ParseReceiptConfig,
+  "formatColumns" | "formatInstructions" | "inputInstructions"
+>) =>
+  `columnas del formato: ${formatColumns}, instrucciones adicionales para el formato: ${formatInstructions ?? "sin instrucciones adicionales"}, instrucciones para el archivo: ${inputInstructions}`;

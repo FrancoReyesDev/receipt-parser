@@ -3,7 +3,6 @@ import { Effect, pipe } from "effect";
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { getColumnsFromXlsxFileUC } from "~/application/useCases/getColumnsFromXlsxFile.useCase";
-import { WorkbookServicePort } from "~/application/ports/workbookService.port";
 import { WorkbookXlsxAdapter } from "~/infra/adapters/workbookXlsx.adapter";
 import { FormFields } from "~/constants/FormFields";
 
@@ -16,7 +15,7 @@ const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
 );
 
 const FormatColumnsBadges = (
-  formatColumns: (string | null)[],
+  formatColumns: (string | null)[]
 ): React.ReactNode => (
   <div className="flex flex-wrap gap-2">
     {formatColumns.map((column) => (
@@ -38,7 +37,7 @@ const Home = () => {
       Effect.flatMap(getColumnsFromXlsxFileUC),
       Effect.tap(setFormatColumns),
       Effect.provide(WorkbookXlsxAdapter),
-      Effect.runPromise,
+      Effect.runPromise
     );
   }
 

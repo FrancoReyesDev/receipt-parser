@@ -1,11 +1,9 @@
 import { Context, Effect } from "effect";
+import type { ParseReceiptConfig } from "~/domain/ParseReceiptConfig.domain";
 
 export class ReceiptParserPort extends Context.Tag("ReceiptParser")<
   ReceiptParserPort,
   {
-    parseReceipt: (
-      format: { columnsArrayString: string; instructions: string },
-      input: { file: File; instructions: string },
-    ) => Effect.Effect<unknown>;
+    parseReceipt: (config: ParseReceiptConfig) => Effect.Effect<unknown>;
   }
 >() {}

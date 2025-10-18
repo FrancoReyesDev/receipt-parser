@@ -1,7 +1,8 @@
 import { Context, Effect, Layer } from "effect";
 import OpenAI from "openai";
 import { ReceiptParserPort } from "~/application/ports/receiptParser.port";
-import { systemPrompt } from "~/constants/Prompts";
+import { createUserPrompt, systemPrompt } from "~/constants/Prompts";
+import type { ParseReceiptConfig } from "~/domain/ParseReceiptConfig.domain";
 
 export class OpenAIClient extends Context.Tag("OpenAIClient")<
   OpenAIClient,
@@ -13,14 +14,23 @@ export const receiptParserGPTAdapter = Layer.effect(
   Effect.gen(function* () {
     const client = yield* OpenAIClient;
 
-    const parseReceipt = (
-      format: { columnsArrayString: string; instructions: string },
-      input: { file: File; instructions: string },
-    ) =>
+    const parseReceipt = (config: ParseReceiptConfig) =>
       Effect.gen(function* () {
-        const fileContent = yield* Effect.promise(() =>
-          fileToInputItem(input.file),
+        const fileIsPdf = config.inputFile.type === "application/pdf";
+
+        const fileResponse = yield* Effect.promise(() =>
+          client.files.create({
+            file: config.inputFile,
+            purpose: fileIsPdf ? "user_data" : "vision",
+          })
         );
+
+        const responseUserInputContent: OpenAI.Responses.ResponseInput = [];
+
+        const fileContent = fileIsPdf
+          ? ({ type: "input_file", file_id: fileResponse.id } as const)
+          : ({ type: "input_image", file_id: fileResponse.id } as const);
+
         const response = yield* Effect.promise(() =>
           client.responses.create({
             model: "gpt-5",
@@ -35,20 +45,19 @@ export const receiptParserGPTAdapter = Layer.effect(
                 content: [
                   {
                     type: "input_text",
-                    text: `columnas del formato: ${format.columnsArrayString}, instrucciones adicionales para el formato: ${format.instructions ?? "sin instrucciones adicionales"}, instrucciones para el archivo: ${input.instructions}`,
+                    text: createUserPrompt(config),
                   },
-                  fileContent as { type: "input_file" },
                 ],
               },
             ],
             text: {
               format: { type: "json_object" },
             },
-          }),
+          })
         );
         return response.output_text;
       });
 
     return { parseReceipt };
-  }),
+  })
 );
