@@ -25,18 +25,14 @@ export const receiptParserGPTAdapter = Layer.effect(
           })
         );
 
-        const responseUserInputContent: OpenAI.Responses.ResponseInput = [];
-
-        const fileContent = fileIsPdf
-          ? ({ type: "input_file", file_id: fileResponse.id } as const)
-          : ({ type: "input_image", file_id: fileResponse.id } as const);
-
         const response = yield* Effect.promise(() =>
-          client.responses.create({
+          client.responses.parse({
             model: "gpt-5",
+            reasoning: { effort: "low" },
+            // schema: matrixSchema,
             input: [
               {
-                role: "system",
+                role: "developer",
                 content: systemPrompt,
               },
 
@@ -47,15 +43,23 @@ export const receiptParserGPTAdapter = Layer.effect(
                     type: "input_text",
                     text: createUserPrompt(config),
                   },
+                  fileIsPdf
+                    ? {
+                        type: "input_file",
+                        file_id: fileResponse.id,
+                      }
+                    : {
+                        type: "input_image",
+                        file_id: fileResponse.id,
+                        detail: "high",
+                      },
                 ],
               },
             ],
-            text: {
-              format: { type: "json_object" },
-            },
           })
         );
-        return response.output_text;
+
+        return JSON.parse(response.output_text);
       });
 
     return { parseReceipt };

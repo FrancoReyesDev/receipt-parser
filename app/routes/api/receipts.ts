@@ -7,11 +7,13 @@ import {
   OpenAIClient,
   receiptParserGPTAdapter,
 } from "~/infra/adapters/receiptParserGPT.adapter";
+import JSZip from "jszip";
+import { zipWorbooksUC } from "~/application/useCases/zipWorbooks.useCase";
 
 export async function action({ context, request }: Route.ActionArgs) {
+  const zip = new JSZip();
   const formData = await request.formData();
-
-  const formatColumnsArrayString = formData.get(
+  const formatColumns = formData.get(
     FormFields.formatColumnsArrayString
   ) as string;
   const formatInstructions = formData.get(
@@ -24,17 +26,20 @@ export async function action({ context, request }: Route.ActionArgs) {
 
   const client = new OpenAI({ apiKey: context.cloudflare.env.OPENAI_API_KEY });
 
-  const responses = await Promise.all(
+  await Promise.all(
     inputFiles.map((file) =>
       pipe(
         Effect.succeed(file as File),
         Effect.flatMap((file) =>
-          parseReceiptUC(
-            formatColumnsArrayString,
+          parseReceiptUC({
+            formatColumns,
             formatInstructions,
-            file,
-            inputInstructions
-          )
+            inputFile: file,
+            inputInstructions,
+          })
+        ),
+        Effect.tap((inference) =>
+          zipWorbooksUC({ inputFile: file, inference, zip })
         ),
         Effect.provide(receiptParserGPTAdapter),
         Effect.provide(Layer.succeed(OpenAIClient, client)),
@@ -43,7 +48,17 @@ export async function action({ context, request }: Route.ActionArgs) {
     )
   );
 
-  return new Response(String(responses), {
-    status: formatColumnsArrayString === null || !inputFiles.length ? 400 : 200,
+  const zipBuffer = await zip.generateAsync({
+    type: "nodebuffer",
+    compression: "DEFLATE",
+  });
+
+  const filename = `facturas-${new Date().toISOString().slice(0, 10)}.zip`;
+
+  return new Response(new Uint8Array(zipBuffer), {
+    headers: {
+      "Content-Type": "application/zip",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+    },
   });
 }

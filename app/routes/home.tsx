@@ -5,6 +5,8 @@ import { Badge } from "~/components/ui/badge";
 import { getColumnsFromXlsxFileUC } from "~/application/useCases/getColumnsFromXlsxFile.useCase";
 import { WorkbookXlsxAdapter } from "~/infra/adapters/workbookXlsx.adapter";
 import { FormFields } from "~/constants/FormFields";
+import { Textarea } from "~/components/ui/textarea";
+import { Input } from "~/components/ui/input";
 
 const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -50,7 +52,7 @@ const Home = () => {
     >
       <FieldContainer>
         <label htmlFor={FormFields.formatFile}>Selecciona la plantilla:</label>
-        <input
+        <Input
           type="file"
           id={FormFields.formatFile}
           name={FormFields.formatFile}
@@ -58,7 +60,7 @@ const Home = () => {
           onChange={handleChangeFormatFile}
           required
         />
-        <input
+        <Input
           type="text"
           hidden
           readOnly
@@ -74,15 +76,15 @@ const Home = () => {
         <label htmlFor={FormFields.formatInstructions}>
           Instrucciones para el formato de salida:
         </label>
-        <textarea
+        <Textarea
           name={FormFields.formatInstructions}
           placeholder="Instrucciones para el formato de salida (opcional)"
           className="h-32"
-        ></textarea>
+        ></Textarea>
       </FieldContainer>
       <FieldContainer>
         <label htmlFor={FormFields.inputFiles}>Upload files:</label>
-        <input
+        <Input
           type="file"
           id={FormFields.inputFiles}
           name={FormFields.inputFiles}
@@ -93,15 +95,13 @@ const Home = () => {
         <label htmlFor={FormFields.inputInstructions}>
           Additional Instructions:
         </label>
-        <textarea
+        <Textarea
           name={FormFields.inputInstructions}
           placeholder="Additional instructions (optional)"
           className="h-32"
-        ></textarea>
+        ></Textarea>
       </FieldContainer>
-      <Button>
-        <input type="submit" value="Parse Receipts" />
-      </Button>
+      <Button type="submit">Parse Receipts</Button>
     </form>
   );
 };

@@ -49,6 +49,8 @@ Si una columna no puede ser llenada, deja "" (string vacío).
 
 Si se debe calcular una cantidad multiplicando unidades (por ejemplo x6, x12), aplica esa regla si es clara.
 
+La primera fila debe tener las columnas, 
+
 Sobre texto:
 
 Limpia espacios innecesarios, saltos de línea y fragmentos repetidos.
