@@ -13,7 +13,8 @@
     "types": ["./worker-configuration.d.ts"],
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "~documents/*": ["./app/modules/documents/*"]
     }
   }
 }

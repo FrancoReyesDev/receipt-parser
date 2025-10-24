@@ -20,7 +20,9 @@
     "baseUrl": ".",
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "~documents/*": ["./app/modules/documents/*"],
+      "~providers/*": ["./app/modules/providers/*"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

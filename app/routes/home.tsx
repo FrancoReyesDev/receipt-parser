@@ -1,12 +1,13 @@
-import { Button } from "~/components/ui/button";
 import { Effect, pipe } from "effect";
 import { useState } from "react";
+
+import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
-import { getColumnsFromXlsxFileUC } from "~/application/useCases/getColumnsFromXlsxFile.useCase";
-import { WorkbookXlsxAdapter } from "~/infra/adapters/workbookXlsx.adapter";
-import { FormFields } from "~/constants/FormFields";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
+import { WorkbookXlsxAdapter } from "~documents/infra/adapters/workbookXlsx.adapter";
+import { getColumnsFromXlsxFileUC } from "~documents/application/useCases/getColumnsFromXlsxFile.useCase";
+import { FormFields } from "~documents/application/enums/FormFields.enum";
 
 const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
   children,

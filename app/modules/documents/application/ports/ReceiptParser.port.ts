@@ -1,11 +1,11 @@
 import { Context, Effect } from "effect";
-import type { ParseReceiptConfig } from "~/domain/ParseReceiptConfig.domain";
+import type { ParseReceiptConfigDTO } from "../dto/ParseReceiptConfig.dto";
 
 export class ReceiptParserPort extends Context.Tag("ReceiptParser")<
   ReceiptParserPort,
   {
     parseReceipt: (
-      config: ParseReceiptConfig
+      config: ParseReceiptConfigDTO
     ) => Effect.Effect<(string | number)[][]>;
   }
 >() {}

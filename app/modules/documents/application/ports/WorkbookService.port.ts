@@ -1,4 +1,4 @@
-import { Context, Effect, pipe } from "effect";
+import { Context, Effect } from "effect";
 import * as XLSX from "xlsx";
 
 export class WorkbookServicePort extends Context.Tag("WorkbookService")<
@@ -6,7 +6,7 @@ export class WorkbookServicePort extends Context.Tag("WorkbookService")<
   {
     fileToWorkbook: (file: File) => Effect.Effect<XLSX.WorkBook>;
     getColumnsFromFormatWorkbook: (
-      workbook: XLSX.WorkBook,
+      workbook: XLSX.WorkBook
     ) => Effect.Effect<(string | null)[]>;
   }
 >() {}

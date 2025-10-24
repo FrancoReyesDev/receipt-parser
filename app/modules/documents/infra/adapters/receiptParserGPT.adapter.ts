@@ -1,4 +1,7 @@
-import type { ParseReceiptConfig } from "~/domain/ParseReceiptConfig.domain";
+import { Effect, Layer } from "effect";
+import { ReceiptParserPort } from "~/modules/documents/application/ports/ReceiptParser.port";
+import type { ParseReceiptConfigDTO } from "~documents/application/dto/ParseReceiptConfig.dto";
+import { OpenAIClient } from "~/modules/documents/infra/clients/OpenAi.client";
 
 export const systemPrompt = `Eres un sistema que convierte facturas en datos estructurados para hojas de cálculo.
 
@@ -66,7 +69,64 @@ export const createUserPrompt = ({
   formatInstructions,
   inputInstructions,
 }: Pick<
-  ParseReceiptConfig,
+  ParseReceiptConfigDTO,
   "formatColumns" | "formatInstructions" | "inputInstructions"
 >) =>
   `columnas del formato: ${formatColumns}, instrucciones adicionales para el formato: ${formatInstructions ?? "sin instrucciones adicionales"}, instrucciones para el archivo: ${inputInstructions}`;
+
+export const receiptParserGPTAdapter = Layer.effect(
+  ReceiptParserPort,
+  Effect.gen(function* () {
+    const client = yield* OpenAIClient;
+
+    const parseReceipt = (config: ParseReceiptConfigDTO) =>
+      Effect.gen(function* () {
+        const fileIsPdf = config.inputFile.type === "application/pdf";
+
+        const fileResponse = yield* Effect.promise(() =>
+          client.files.create({
+            file: config.inputFile,
+            purpose: fileIsPdf ? "user_data" : "vision",
+          })
+        );
+
+        const response = yield* Effect.promise(() =>
+          client.responses.parse({
+            model: "gpt-5",
+            reasoning: { effort: "low" },
+            // schema: matrixSchema,
+            input: [
+              {
+                role: "developer",
+                content: systemPrompt,
+              },
+
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "input_text",
+                    text: createUserPrompt(config),
+                  },
+                  fileIsPdf
+                    ? {
+                        type: "input_file",
+                        file_id: fileResponse.id,
+                      }
+                    : {
+                        type: "input_image",
+                        file_id: fileResponse.id,
+                        detail: "high",
+                      },
+                ],
+              },
+            ],
+          })
+        );
+
+        return JSON.parse(response.output_text);
+      });
+
+    return { parseReceipt };
+  })
+);

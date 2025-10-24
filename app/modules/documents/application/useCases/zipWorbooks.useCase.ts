@@ -2,9 +2,9 @@ import { Effect } from "effect";
 import JSZip from "jszip";
 import * as XLSX from "xlsx";
 import path from "path";
-import type { ParseReceiptConfig } from "~/domain/ParseReceiptConfig.domain";
+import type { ParseReceiptConfigDTO } from "../dto/ParseReceiptConfig.dto";
 
-interface Params extends Pick<ParseReceiptConfig, "inputFile"> {
+interface Params extends Pick<ParseReceiptConfigDTO, "inputFile"> {
   inference: (string | number)[][];
   zip: JSZip;
 }

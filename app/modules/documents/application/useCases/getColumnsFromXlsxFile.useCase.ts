@@ -1,5 +1,5 @@
 import { Effect, pipe } from "effect";
-import { WorkbookServicePort } from "../ports/workbookService.port";
+import { WorkbookServicePort } from "../ports/WorkbookService.port";
 
 export const getColumnsFromXlsxFileUC = (file: File) =>
   Effect.gen(function* () {
@@ -8,7 +8,7 @@ export const getColumnsFromXlsxFileUC = (file: File) =>
     const columns = yield* pipe(
       Effect.succeed(file),
       Effect.flatMap(workbookService.fileToWorkbook),
-      Effect.flatMap(workbookService.getColumnsFromFormatWorkbook),
+      Effect.flatMap(workbookService.getColumnsFromFormatWorkbook)
     );
 
     return columns;

@@ -1,4 +1,4 @@
-export interface ParseReceiptConfig {
+export interface ParseReceiptConfigDTO {
   formatColumns: string;
   formatInstructions?: string;
   inputFile: File;
