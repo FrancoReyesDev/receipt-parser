@@ -1,14 +1,13 @@
-import { FormFields } from "~/constants/FormFields";
 import type { Route } from "./+types/receipts";
 import OpenAI from "openai";
 import { Effect, Layer, pipe } from "effect";
-import { parseReceiptUC } from "~/application/useCases/parseReceipt.useCase";
-import {
-  OpenAIClient,
-  receiptParserGPTAdapter,
-} from "~/infra/adapters/receiptParserGPT.adapter";
+
 import JSZip from "jszip";
-import { zipWorbooksUC } from "~/application/useCases/zipWorbooks.useCase";
+import { FormFields } from "~extractors/application/enums/FormFields.enum";
+import { parseReceiptUC } from "~extractors/application/useCases/parseReceipt.useCase";
+import { zipWorbooksUC } from "~extractors/application/useCases/zipWorbooks.useCase";
+import { receiptParserGPTAdapter } from "~extractors/infra/adapters/receiptParserGPT.adapter";
+import { OpenAIClient } from "~extractors/infra/clients/OpenAi.client";
 
 export async function action({ context, request }: Route.ActionArgs) {
   const zip = new JSZip();

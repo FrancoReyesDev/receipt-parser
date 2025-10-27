@@ -9,6 +9,10 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { SidebarProvider } from "./components/ui/sidebar";
+import { AppSidebar } from "./components/root/app-sidebar";
+import { AppBreadcrumb } from "./components/root/app-breadcrumb";
+import { Separator } from "./components/ui/separator";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -16,6 +20,10 @@ export const links: Route.LinksFunction = () => [
     rel: "preconnect",
     href: "https://fonts.gstatic.com",
     crossOrigin: "anonymous",
+  },
+  {
+    href: "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap",
+    rel: "stylesheet",
   },
   {
     rel: "stylesheet",
@@ -33,9 +41,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <main className="container m-auto">{children}</main>
-        <ScrollRestoration />
-        <Scripts />
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="flex flex-col w-full m-2 p-2 border shadow rounded-md">
+            <AppBreadcrumb />
+            <Separator className="my-1" />
+            {children}
+          </main>
+          <ScrollRestoration />
+          <Scripts />
+        </SidebarProvider>
       </body>
     </html>
   );

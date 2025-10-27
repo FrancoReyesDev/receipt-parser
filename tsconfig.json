@@ -14,7 +14,7 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
-      "~documents/*": ["./app/modules/documents/*"]
+      "~extractors/*": ["./app/modules/extractors/*"]
     }
   }
 }

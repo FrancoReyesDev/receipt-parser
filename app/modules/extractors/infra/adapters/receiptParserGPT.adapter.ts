@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
-import { ReceiptParserPort } from "~/modules/documents/application/ports/ReceiptParser.port";
-import type { ParseReceiptConfigDTO } from "~documents/application/dto/ParseReceiptConfig.dto";
-import { OpenAIClient } from "~/modules/documents/infra/clients/OpenAi.client";
+import { ReceiptParserPort } from "~extractors/application/ports/ReceiptParser.port";
+import type { ParseReceiptConfigDTO } from "~extractors/application/dto/ParseReceiptConfig.dto";
+import { OpenAIClient } from "~extractors/infra/clients/OpenAi.client";
 
 export const systemPrompt = `Eres un sistema que convierte facturas en datos estructurados para hojas de cálculo.
 

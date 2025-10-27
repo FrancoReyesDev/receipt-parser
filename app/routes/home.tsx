@@ -5,9 +5,9 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import { WorkbookXlsxAdapter } from "~documents/infra/adapters/workbookXlsx.adapter";
-import { getColumnsFromXlsxFileUC } from "~documents/application/useCases/getColumnsFromXlsxFile.useCase";
-import { FormFields } from "~documents/application/enums/FormFields.enum";
+import { WorkbookXlsxAdapter } from "~extractors/infra/adapters/workbookXlsx.adapter";
+import { getColumnsFromXlsxFileUC } from "~extractors/application/useCases/getColumnsFromXlsxFile.useCase";
+import { FormFields } from "~extractors/application/enums/FormFields.enum";
 
 const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -16,6 +16,11 @@ const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
     {children}
   </div>
 );
+
+export const handle = {
+  route: "/",
+  label: () => "Home",
+};
 
 const FormatColumnsBadges = (
   formatColumns: (string | null)[]

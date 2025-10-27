@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { Effect, Layer, pipe } from "effect";
-import { WorkbookServicePort } from "~documents/application/ports/WorkbookService.port";
+import { WorkbookServicePort } from "~extractors/application/ports/WorkbookService.port";
 
 const fileToWorkbook = (file: File) =>
   pipe(
