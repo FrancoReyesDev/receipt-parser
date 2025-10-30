@@ -74,7 +74,7 @@ export const createUserPrompt = ({
 >) =>
   `columnas del formato: ${formatColumns}, instrucciones adicionales para el formato: ${formatInstructions ?? "sin instrucciones adicionales"}, instrucciones para el archivo: ${inputInstructions}`;
 
-export const receiptParserGPTAdapter = Layer.effect(
+export const ReceiptParserGPTAdapter = Layer.effect(
   ReceiptParserPort,
   Effect.gen(function* () {
     const client = yield* OpenAIClient;

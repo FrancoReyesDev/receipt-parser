@@ -6,7 +6,7 @@ import JSZip from "jszip";
 import { FormFields } from "~extractors/application/enums/FormFields.enum";
 import { parseReceiptUC } from "~extractors/application/useCases/parseReceipt.useCase";
 import { zipWorbooksUC } from "~extractors/application/useCases/zipWorbooks.useCase";
-import { receiptParserGPTAdapter } from "~extractors/infra/adapters/receiptParserGPT.adapter";
+import { ReceiptParserGPTAdapter } from "~/modules/extractors/infra/adapters/ReceiptParserGPT.adapter";
 import { OpenAIClient } from "~extractors/infra/clients/OpenAi.client";
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -40,7 +40,7 @@ export async function action({ context, request }: Route.ActionArgs) {
         Effect.tap((inference) =>
           zipWorbooksUC({ inputFile: file, inference, zip })
         ),
-        Effect.provide(receiptParserGPTAdapter),
+        Effect.provide(ReceiptParserGPTAdapter),
         Effect.provide(Layer.succeed(OpenAIClient, client)),
         Effect.runPromise
       )

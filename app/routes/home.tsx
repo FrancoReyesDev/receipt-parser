@@ -5,9 +5,10 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Textarea } from "~/components/ui/textarea";
 import { Input } from "~/components/ui/input";
-import { WorkbookXlsxAdapter } from "~extractors/infra/adapters/workbookXlsx.adapter";
+import { WorkbookXlsxAdapter } from "~/modules/extractors/infra/adapters/WorkbookXlsx.adapter";
 import { getColumnsFromXlsxFileUC } from "~extractors/application/useCases/getColumnsFromXlsxFile.useCase";
 import { FormFields } from "~extractors/application/enums/FormFields.enum";
+import type { BreadcrumbHandle } from "~/components/root/app-breadcrumb";
 
 const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -17,10 +18,10 @@ const FieldContainer: React.FC<{ children: React.ReactNode }> = ({
   </div>
 );
 
-export const handle = {
+export const handle: BreadcrumbHandle = () => ({
   route: "/",
-  label: () => "Home",
-};
+  label: "Home",
+});
 
 const FormatColumnsBadges = (
   formatColumns: (string | null)[]

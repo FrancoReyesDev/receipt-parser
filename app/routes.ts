@@ -11,7 +11,6 @@ const routeConfig: RouteConfig = [
   ...prefix("extractors", [
     layout("./layouts/extractors.layout.tsx", [
       index("./routes/extractors/index.tsx"),
-      route("new", "./routes/extractors/new.tsx"),
       route(":id", "./routes/extractors/byId/index.tsx"),
     ]),
   ]),

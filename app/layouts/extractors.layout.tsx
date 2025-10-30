@@ -1,9 +1,10 @@
 import { Outlet } from "react-router";
+import type { BreadcrumbHandle } from "~/components/root/app-breadcrumb";
 
-export const handle = {
+export const handle: BreadcrumbHandle = () => ({
   route: "/extractors",
-  label: () => "Extractores",
-};
+  label: "Extractores",
+});
 
 export default function ExtractorsLayout() {
   return (

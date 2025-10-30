@@ -8,15 +8,16 @@ import {
 } from "../ui/breadcrumb";
 import React from "react";
 
-export type BreadcrumbHandle = {
+export type BreadcrumbHandle = (match: UIMatch) => {
   route: string;
-  label: (loaderData: unknown) => string;
+  label: string;
 };
 
 export function AppBreadcrumb() {
   const matches = useMatches() as UIMatch<unknown, BreadcrumbHandle>[];
   const matchesWithHandlers = matches.filter((match) => match.handle);
-  console.log({ matchesWithHandlers });
+
+  console.log({ matches });
 
   return (
     <Breadcrumb className="p-2">
@@ -26,10 +27,10 @@ export function AppBreadcrumb() {
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link
-                  to={match.handle.route}
+                  to={match.handle(match).route}
                   className="font-medium text-sm text-muted-foreground"
                 >
-                  {match.handle.label(match.loaderData)}
+                  {match.handle(match).label}
                 </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
