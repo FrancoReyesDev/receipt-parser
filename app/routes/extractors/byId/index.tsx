@@ -1,7 +1,6 @@
 import { Effect, Layer, pipe } from "effect";
 import type { Route } from "./+types";
 
-import { Card } from "~/components/ui/card";
 import { DropzoneFileViewer } from "~/modules/extractors/infra/ui/components/dropzone-file-viewer";
 import { NewExtractorForm } from "~/modules/extractors/infra/ui/components/new-extractor-form";
 import { useTmpFile } from "~/modules/extractors/infra/ui/hooks/useTmpFile";
