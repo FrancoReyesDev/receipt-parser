@@ -1,13 +1,14 @@
 import type { Route } from "./+types/receipts";
 import OpenAI from "openai";
 import { Effect, Layer, pipe } from "effect";
-
+import _ from "lodash";
 import JSZip from "jszip";
 import { FormFields } from "~extractors/application/enums/FormFields.enum";
-import { parseReceiptUC } from "~extractors/application/useCases/parseReceipt.useCase";
 import { zipWorbooksUC } from "~extractors/application/useCases/zipWorbooks.useCase";
-import { ReceiptParserGPTAdapter } from "~/modules/extractors/infra/adapters/ReceiptParserGPT.adapter";
-import { OpenAIClient } from "~extractors/infra/clients/OpenAi.client";
+import {
+  OpenAIClient,
+  ReceiptParserGPTAdapter,
+} from "~/modules/extractors/infra/adapters/ReceiptParserGPT.adapter";
 import { ReceiptParserPort } from "~/modules/extractors/application/ports/ReceiptParser.port";
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -37,26 +38,61 @@ export async function action({ context, request }: Route.ActionArgs) {
 
   const client = new OpenAI({ apiKey: context.cloudflare.env.OPENAI_API_KEY });
 
-  const OpenAiClientLive = Layer.succeed(OpenAIClient, client);
-  const ReceiptParserLive = ReceiptParserGPTAdapter.pipe(
-    Layer.provide(OpenAiClientLive)
+  const mapInference = (inference: Record<string, any>[]) =>
+    Effect.gen(function* () {
+      if (
+        handleMap === "false" ||
+        !indexKeyDB ||
+        !indexKeyFormat ||
+        !mapKeyDB ||
+        !mapKeyFormat
+      )
+        return inference;
+
+      const database = JSON.parse(databaseJson) as Record<string, any>[];
+      const indexedDatabase = _.keyBy(database, indexKeyDB);
+
+      return inference.map((row) => {
+        const index = row[indexKeyFormat];
+        if (!(index in indexedDatabase)) return row;
+
+        const databaseRow = indexedDatabase[index];
+
+        const finalRow = mapKeyDB.reduce((acc, keyDb, index) => {
+          const keyFormat = mapKeyFormat[index];
+          const databaseValue = databaseRow[keyDb];
+          const newRow = { ...acc, [keyFormat]: databaseValue };
+
+          return newRow;
+        }, row);
+
+        return finalRow;
+      });
+    });
+
+  const inferenceEachEffect = pipe(
+    ReceiptParserPort,
+    Effect.flatMap((parser) =>
+      Effect.forEach(inputFiles, (file) =>
+        pipe(
+          parser.parseReceipt({
+            formatColumns,
+            formatInstructions,
+            inputFile: file,
+            inputInstructions,
+          }),
+          Effect.flatMap(mapInference),
+          Effect.tap((inference) =>
+            zipWorbooksUC({ inputFile: file, inference, zip })
+          )
+        )
+      )
+    ),
+    Effect.provide(ReceiptParserGPTAdapter),
+    Effect.provide(Layer.succeed(OpenAIClient, client))
   );
 
-  const inferenceEachEffect = Effect.forEach(inputFiles, (file) =>
-    pipe(
-      parseReceiptUC({
-        formatColumns,
-        formatInstructions,
-        inputFile: file,
-        inputInstructions,
-      }),
-      Effect.tap((inference) =>
-        zipWorbooksUC({ inputFile: file, inference, zip })
-      )
-    )
-  ).pipe(Effect.provide(ReceiptParserLive));
-
-  await inferenceEachEffect.pipe(Effect.runPromise);
+  await Effect.runPromise(inferenceEachEffect);
 
   const zipBuffer = await zip.generateAsync({
     type: "nodebuffer",

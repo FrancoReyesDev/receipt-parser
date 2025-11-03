@@ -172,7 +172,7 @@ const Home = () => {
           <>
             <Label>Clave de indice</Label>
             <div className="flex gap-2">
-              <NativeSelect name={FormFields.indexKeyDB}>
+              <NativeSelect name={FormFields.indexKeyFormat}>
                 {formatColumns
                   .filter((fc) => fc !== null)
                   .map((fc) => (
@@ -182,7 +182,7 @@ const Home = () => {
                   ))}
               </NativeSelect>
               <ArrowRight />
-              <NativeSelect name={FormFields.indexKeyFormat}>
+              <NativeSelect name={FormFields.indexKeyDB}>
                 {Object.keys(database[0])
                   .filter((fc) => fc !== null)
                   .map((fc) => (
@@ -195,7 +195,7 @@ const Home = () => {
             <Label>Claves de mapeo</Label>
             {mapeos.map((uuid) => (
               <div className="flex gap-2" key={uuid}>
-                <NativeSelect name={FormFields.mapKeyDB}>
+                <NativeSelect name={FormFields.mapKeyFormat}>
                   {formatColumns
                     .filter((fc) => fc !== null)
                     .map((fc) => (
@@ -205,7 +205,7 @@ const Home = () => {
                     ))}
                 </NativeSelect>
                 <ArrowRight />
-                <NativeSelect name={FormFields.mapKeyFormat}>
+                <NativeSelect name={FormFields.mapKeyDB}>
                   {Object.keys(database[0])
                     .filter((fc) => fc !== null)
                     .map((fc) => (

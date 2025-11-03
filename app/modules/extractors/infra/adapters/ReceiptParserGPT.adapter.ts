@@ -1,7 +1,7 @@
-import { Effect, Layer } from "effect";
+import { Context, Effect, Layer } from "effect";
 import { ReceiptParserPort } from "~extractors/application/ports/ReceiptParser.port";
 import type { ParseReceiptConfigDTO } from "~extractors/application/dto/ParseReceiptConfig.dto";
-import { OpenAIClient } from "~extractors/infra/clients/OpenAi.client";
+import type OpenAI from "openai";
 
 export const systemPrompt = `Eres un sistema que convierte facturas en datos estructurados para hojas de cálculo.
 
@@ -72,6 +72,11 @@ export const createUserPrompt = ({
 >) =>
   `columnas del formato: ${formatColumns}, instrucciones adicionales para el formato: ${formatInstructions ?? "sin instrucciones adicionales"}, instrucciones para el archivo: ${inputInstructions}`;
 
+export class OpenAIClient extends Context.Tag("OpenAIClient")<
+  OpenAIClient,
+  OpenAI
+>() {}
+
 export const ReceiptParserGPTAdapter = Layer.effect(
   ReceiptParserPort,
   Effect.gen(function* () {
@@ -90,8 +95,7 @@ export const ReceiptParserGPTAdapter = Layer.effect(
 
         const response = yield* Effect.promise(() =>
           client.responses.parse({
-            model: "gpt-5",
-            // schema: matrixSchema,
+            model: "gpt-4.1-mini",
             input: [
               {
                 role: "developer",
