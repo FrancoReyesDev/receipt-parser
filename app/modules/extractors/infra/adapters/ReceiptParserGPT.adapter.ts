@@ -24,7 +24,7 @@ Reglas importantes:
 
 Formato del resultado:
 
-Devuelve solo el JSON en formato (string | number)[][].
+Devuelve solo el JSON en formato Record<string,string|number|null>[], siendo la key el nombre de la columna exacto.
 
 No incluyas explicaciones ni texto adicional.
 
@@ -52,8 +52,6 @@ Si una columna no puede ser llenada, deja "" (string vacío).
 
 Si se debe calcular una cantidad multiplicando unidades (por ejemplo x6, x12), aplica esa regla si es clara.
 
-La primera fila debe tener las columnas, 
-
 Sobre texto:
 
 Limpia espacios innecesarios, saltos de línea y fragmentos repetidos.
@@ -62,7 +60,7 @@ Sobre contexto:
 
 Si hay ambigüedad entre valores con coma o punto, usa la notación más consistente dentro del mismo archivo.
 
-Devuelve solo el JSON final, sin comentarios, sin texto adicional, y estructurado correctamente como (string | number)[][].`;
+Devuelve solo el JSON final, sin comentarios, sin texto adicional.`;
 
 export const createUserPrompt = ({
   formatColumns,
@@ -93,7 +91,6 @@ export const ReceiptParserGPTAdapter = Layer.effect(
         const response = yield* Effect.promise(() =>
           client.responses.parse({
             model: "gpt-5",
-            reasoning: { effort: "low" },
             // schema: matrixSchema,
             input: [
               {

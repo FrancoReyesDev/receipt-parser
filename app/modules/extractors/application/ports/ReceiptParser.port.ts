@@ -6,6 +6,6 @@ export class ReceiptParserPort extends Context.Tag("ReceiptParser")<
   {
     parseReceipt: (
       config: ParseReceiptConfigDTO
-    ) => Effect.Effect<(string | number)[][]>;
+    ) => Effect.Effect<Record<string, string | number | null>[]>;
   }
 >() {}

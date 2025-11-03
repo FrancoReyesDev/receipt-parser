@@ -8,6 +8,7 @@ import { parseReceiptUC } from "~extractors/application/useCases/parseReceipt.us
 import { zipWorbooksUC } from "~extractors/application/useCases/zipWorbooks.useCase";
 import { ReceiptParserGPTAdapter } from "~/modules/extractors/infra/adapters/ReceiptParserGPT.adapter";
 import { OpenAIClient } from "~extractors/infra/clients/OpenAi.client";
+import { ReceiptParserPort } from "~/modules/extractors/application/ports/ReceiptParser.port";
 
 export async function action({ context, request }: Route.ActionArgs) {
   const zip = new JSZip();
@@ -23,36 +24,46 @@ export async function action({ context, request }: Route.ActionArgs) {
     FormFields.inputInstructions
   ) as string;
 
+  const handleMap = formData.get(FormFields.handleMap) as "true" | "false";
+  const databaseJson = formData.get(FormFields.databaseJson) as string;
+  const indexKeyDB = formData.get(FormFields.indexKeyDB) as undefined | string;
+  const indexKeyFormat = formData.get(FormFields.indexKeyFormat) as
+    | undefined
+    | string;
+  const mapKeyDB = formData.getAll(FormFields.mapKeyDB) as undefined | string[];
+  const mapKeyFormat = formData.getAll(FormFields.mapKeyFormat) as
+    | undefined
+    | string[];
+
   const client = new OpenAI({ apiKey: context.cloudflare.env.OPENAI_API_KEY });
 
-  await Promise.all(
-    inputFiles.map((file) =>
-      pipe(
-        Effect.succeed(file as File),
-        Effect.flatMap((file) =>
-          parseReceiptUC({
-            formatColumns,
-            formatInstructions,
-            inputFile: file,
-            inputInstructions,
-          })
-        ),
-        Effect.tap((inference) =>
-          zipWorbooksUC({ inputFile: file, inference, zip })
-        ),
-        Effect.provide(ReceiptParserGPTAdapter),
-        Effect.provide(Layer.succeed(OpenAIClient, client)),
-        Effect.runPromise
+  const OpenAiClientLive = Layer.succeed(OpenAIClient, client);
+  const ReceiptParserLive = ReceiptParserGPTAdapter.pipe(
+    Layer.provide(OpenAiClientLive)
+  );
+
+  const inferenceEachEffect = Effect.forEach(inputFiles, (file) =>
+    pipe(
+      parseReceiptUC({
+        formatColumns,
+        formatInstructions,
+        inputFile: file,
+        inputInstructions,
+      }),
+      Effect.tap((inference) =>
+        zipWorbooksUC({ inputFile: file, inference, zip })
       )
     )
-  );
+  ).pipe(Effect.provide(ReceiptParserLive));
+
+  await inferenceEachEffect.pipe(Effect.runPromise);
 
   const zipBuffer = await zip.generateAsync({
     type: "nodebuffer",
     compression: "DEFLATE",
   });
 
-  const filename = `facturas-${new Date().toISOString().slice(0, 10)}.zip`;
+  const filename = `output-${new Date().toISOString().slice(0, 10)}.zip`;
 
   return new Response(new Uint8Array(zipBuffer), {
     headers: {
